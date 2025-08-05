@@ -1,5 +1,5 @@
 #requirements.txt
-bokeh
+bokeh==3.4.3
 pandas
 requests
 scikit-learn
@@ -12,5 +12,3 @@ pyproj
 readline
 typing
 datetime
-
-
