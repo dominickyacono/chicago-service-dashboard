@@ -1,0 +1,46 @@
+name: Update 311 Service Request Data
+
+on:
+  schedule:
+    # runs the job at 5 AM UTC every day.
+    - cron: '0 5 * * *'
+  
+  workflow_dispatch:
+
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks out a copy of your repository onto the runner
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Sets up a Python environment for you to use
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9' # Make sure this matches your project's Python version
+
+      # Installs all the libraries from your requirements.txt file
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Runs your data pipeline script to generate the new CSV files
+      - name: Run data pipeline script
+        run: python pipeline.py
+
+      # Commits the newly generated CSV files back to your repository
+      - name: Commit and push updated data
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add test_latest_counts_graphed_with_predictions.csv top_services_list.csv
+          # Check if there are actually any changes to the files before committing
+          if git diff --staged --quiet; then
+            echo "No data changes to commit."
+            exit 0
+          fi
+          git commit -m "Automated daily data update"
+          git push
