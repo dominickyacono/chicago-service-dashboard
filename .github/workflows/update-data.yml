@@ -12,6 +12,9 @@ jobs:
   update-data:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       # Checks out a copy of your repository onto the runner
       - name: Check out repository
