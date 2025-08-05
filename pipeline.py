@@ -231,6 +231,9 @@ else:
 # Remove rows where 'street_address' is NaN AND 'community_area' is also NaN
 df = df[~(df['street_address'].isna() & df['community_area'].isna())]
 
+# Remove rows where 'SR_Type' is "311 INFORMATION ONLY CALL"
+df = df[df['SR_Type'] != "311 INFORMATION ONLY CALL"]
+
 #create a copy for the original dataframe
 original_df = df.copy()
 
