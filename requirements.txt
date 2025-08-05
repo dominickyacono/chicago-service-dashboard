@@ -9,6 +9,3 @@ geopandas
 shapely
 fiona
 pyproj
-readline
-typing
-datetime
