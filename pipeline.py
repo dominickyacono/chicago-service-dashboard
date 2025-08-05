@@ -647,8 +647,17 @@ predictions = np.expm1(pred_log)
 # Save predictions to the original DataFrame
 test_data_merged['count_prediction'] = predictions.round(0).astype(int)
 
-# You can still print the first few predictions to check them
 print(test_data_merged[['community_area', 'count_prediction']].head())
 
+final_predictions_df = test_data_merged[['community_area', 'count_prediction']]
+
+test_latest_counts_graphed = test_latest_counts.copy()
+
+test_latest_counts_graphed = test_latest_counts_graphed[['community_area', 'count_lag_1', 'count_lag_2', 'count_lag_3']]
+test_latest_counts_graphed
+
+test_latest_counts_graphed_with_predictions = test_latest_counts_graphed.merge(final_predictions_df, on='community_area')
+
+test_latest_counts_graphed_with_predictions.to_csv("test_latest_counts_graphed_with_predictions.csv", index=False)
 
 
