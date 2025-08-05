@@ -14,8 +14,6 @@ from bokeh.events import Tap
 from bokeh.palettes import Viridis256
 from bokeh.tile_providers import get_provider, Vendors
 
-#directory to grab data
-DATA_DIR = "/var/data"
 
 # --- Data Loading ---
 # It's good practice to wrap file loading in try-except blocks
@@ -34,7 +32,7 @@ except Exception as e:
 try:
     # This file should contain predictions AND the historical data for the trend graph
     # Example columns: community_area, count_prediction, count_lag_1, count_lag_2, count_lag_3
-    predictions_df = pd.read_csv(f"{DATA_DIR}/test_latest_counts_graphed_with_predictions.csv")
+    predictions_df = pd.read_csv("test_latest_counts_graphed_with_predictions.csv")
     if 'historical_average' not in predictions_df.columns:
         # If no average exists, use yesterday's count (lag_1) as a proxy.
         predictions_df['historical_average'] = predictions_df['count_lag_1']
@@ -55,7 +53,7 @@ except Exception as e:
 try:
     # This file should contain top service types for each community area
     # Example columns: community_area_number, top_3_services
-    top_services_df = pd.read_csv(f"{DATA_DIR}/top_services_list.csv")
+    top_services_df = pd.read_csv("top_services_list.csv")
 except Exception as e:
     print(f"Error loading top services CSV file: {e}")
     # Create a dummy dataframe if the file is not found
