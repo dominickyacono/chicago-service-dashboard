@@ -74,7 +74,7 @@ def get_chicago_community_area_number(address: str) -> Union[int, None]:
         # If the community area name is not found...
         if community_area_name:
             
-            normalized_name = community_area_name.lower()
+            normalized_name = community_area_name.lower().replace("'", "")
             community_area_number = COMMUNITY_AREA_MAP.get(normalized_name)
 
             if community_area_number:
