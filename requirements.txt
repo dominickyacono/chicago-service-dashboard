@@ -1,0 +1,16 @@
+#requirements.txt
+bokeh
+pandas
+requests
+scikit-learn
+xgboost
+numpy
+geopandas
+shapely
+fiona
+pyproj
+readline
+typing
+datetime
+
+
