@@ -3,7 +3,6 @@ import pandas as pd
 from datetime import date
 import numpy as np
 
-from bokeh.plotting import figure
 from bokeh.models import (
     GeoJSONDataSource, HoverTool, LinearColorMapper, ColorBar, Div,
     CustomJS, Patches, ColumnDataSource, NumeralTickFormatter
@@ -12,7 +11,8 @@ from bokeh.layouts import column, row
 from bokeh.io import curdoc
 from bokeh.events import Tap
 from bokeh.palettes import Viridis256
-from bokeh.plotting import figure, get_provider, vendors
+from bokeh.plotting import figure
+from bokeh.tile_providers import CARTODBPOSITRON_RETINA
 
 
 # --- Data Loading ---
@@ -182,7 +182,8 @@ map_plot = figure(
 )
 map_plot.axis.visible = False
 map_plot.grid.grid_line_color = None
-map_plot.add_tile(get_provider(vendors.CARTODBPOSITRON_RETINA))
+# OLD CODE
+map_plot.add_tile(CARTODBPOSITRON_RETINA)
 
 # Add patches for all community areas (the base layer)
 patches = map_plot.patches(
