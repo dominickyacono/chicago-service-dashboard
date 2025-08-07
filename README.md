@@ -1,6 +1,8 @@
 This personal project builds a urban analytics dashboard, transforming 311 service request data in Chicago into predictive insights.
 By cleaning and transforming community-level data from the city of Chicago, I built a time-series model using a XGBoost regressor. 
-Then, I funneled these predictions into an interactive Bokeh dashboard that provides granular detail. Below is a link to the web dashboard, updated daily and available 24/7:
+Then, I funneled these predictions into an interactive Bokeh dashboard that provides granular detail. 
+
+Below is a link to the web dashboard, updated daily and available 24/7:
 
 ## [Click here to visit the forecasting dashboard](https://github.com/dominickyacono/chicago-service-dashboard/main/app.py)
 
