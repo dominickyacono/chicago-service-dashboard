@@ -251,7 +251,7 @@ df = df[df['created_date'] != latest_date_str]
 
 #save the dataframe to a csv file
 df.to_csv("chicago_data.csv", index=False)
-df = pd.read_csv('chicago_data.csv')
+df = pd.read_csv('data_files/chicago_data.csv')
 
 ##Using the community area mapping, we link addresses to missing community areas
 
@@ -302,7 +302,7 @@ df = df[~df['community_area'].isna()]
 original_df = original_df[~original_df['community_area'].isna()]
 
 ## merge with ASC community survey data
-ACS_data_community = pd.read_csv('ACS_5_Year_Data_by_Community_Area_20250731.csv')
+ACS_data_community = pd.read_csv('data_files/ACS_5_Year_Data_by_Community_Area_20250731.csv')
 
 
 ACS_data_community['community_area_name_lower'] = ACS_data_community['Community Area'].str.lower()
@@ -359,7 +359,7 @@ top_services_list = sorted_counts.groupby('community_area_number')['service_requ
 ).reset_index(name='top_3_services')
 
 #save the top services list to a CSV file
-top_services_list.to_csv("top_services_list.csv", index=False)
+top_services_list.to_csv("data_files/top_services_list.csv", index=False)
 
 # Extract features from 'created_date'
 merged_df['created_date_formatted'] = merged_df['created_date'].dt.strftime('%m-%d-%y')
@@ -422,7 +422,7 @@ community_area_counts['count_rolling_std_7'] = (
 )
 
 
-community_area_counts.to_csv("community_area_counts.csv", index=False)
+community_area_counts.to_csv("data_files/community_area_counts.csv", index=False)
 
 # Remove all rows where any of the 'count_lag' columns have NaN values
 lag_cols = [col for col in community_area_counts.columns if col.startswith('count_lag')]
@@ -661,6 +661,6 @@ test_latest_counts_graphed
 
 test_latest_counts_graphed_with_predictions = test_latest_counts_graphed.merge(final_predictions_df, on='community_area')
 
-test_latest_counts_graphed_with_predictions.to_csv("test_latest_counts_graphed_with_predictions.csv", index=False)
+test_latest_counts_graphed_with_predictions.to_csv("data_files/test_latest_counts_graphed_with_predictions.csv", index=False)
 
 
