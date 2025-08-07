@@ -6,6 +6,8 @@ Below is a link to the web dashboard, updated daily and available 24/7:
 
 ## [Click here to visit the forecasting dashboard](https://github.com/dominickyacono/chicago-service-dashboard/main/app.py)
 
+
+The following files are used to build the underlying backend and frontend of the dashboard:
 - **[Chicago Servcie Requests Dashboard - Overview Report](https://github.com/dominickyacono/chicago-service-dashboard/main/Chicago%20Servcie%20Requests%20Dashboard%20-%20Overview%20Report.pdf)**
   This PDF report gives an overview of the predictive model and the visual dashboard, walking through the developmental steps taken.
 - **[Miscellaneous](https://github.com/dominickyacono/chicago-service-dashboard/main/miscellaneous)**
