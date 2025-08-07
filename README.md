@@ -16,7 +16,7 @@ The following files are used to build the underlying backend and frontend of the
   This folder holds geographic mapping data, historical service request data, and predictions for service requests.
 - **[The App Code](https://github.com/dominickyacono/chicago-service-dashboard/main/app.py)**
   The python code to build the Bokeh dashboard to show the service request predictions.
-- **[The Data Pipeline Code ](https://github.com/dominickyacono/chicago-service-dashboard/main/pipeline.py)**
+- **[The Data Pipeline Code ](https://github.com/dominickyacono/chicago-service-dashboard/blob/main/pipeline.py)**
   This python code provides the step-by-step process of data importing, cleaning, feature engineering, model building, training, and testing.
 
   
