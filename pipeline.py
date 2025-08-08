@@ -13,7 +13,7 @@ from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 
 
 
-#Chicago Community area names mapped to their number
+#Chicago Community area names mapped to their number. This will help mapping communities on the dashboard.
 COMMUNITY_AREA_MAP = {
      'rogers park': 1, 'west ridge': 2, 'uptown': 3, 'lincoln square': 4,
     'north center': 5, 'lake view': 6, 'lincoln park': 7, 'near north side': 8,
@@ -39,13 +39,12 @@ COMMUNITY_AREA_MAP = {
 }
 
 
-## Function to get the Chicago community area number for a given address
+# Function to get the Chicago community area number for a given address
 def get_chicago_community_area_number(address: str) -> Union[int, None]:
     
     #accesses a geocoding service that can convert addresses to geographic coordinates
     nominatim_url = "https://nominatim.openstreetmap.org/search"
 
-    # Parameters for the geocoding request
     nominatim_params = {
         'q': f"{address}, Chicago, IL, USA",
         'format': 'json',
@@ -67,7 +66,6 @@ def get_chicago_community_area_number(address: str) -> Union[int, None]:
             print(f"Warning: Could not find a match for address: {address}")
             return None
 
-        # mapping adress to comunity area 
         address_details = data[0].get('address', {})
         community_area_name = address_details.get('city_district') or address_details.get('suburb')
 
@@ -93,8 +91,7 @@ def get_chicago_community_area_number(address: str) -> Union[int, None]:
         print(f"An error occurred while parsing the API response: {e}")
         return None
 
-## Dictionary to map service requests to categories
-#Category mapping 
+# Dictionary to map service requests to categories
 service_request_map = {
     # Streets & Sidewalks
     'Pothole in Street Complaint': 'Streets & Sidewalks',
@@ -176,7 +173,7 @@ service_request_map = {
 
 
 
-## Connecting to Chicago Request API 
+# Connecting to Chicago Request API 
 api_url = 'https://data.cityofchicago.org/resource/v6vf-nfxy.csv'
 
 all_data = []
@@ -253,9 +250,8 @@ df = df[df['created_date'] != latest_date_str]
 df.to_csv("chicago_data.csv", index=False)
 df = pd.read_csv('data_files/chicago_data.csv')
 
-##Using the community area mapping, we link addresses to missing community areas
+# Using the community area mapping, we link addresses to missing community areas
 
-#First, we start with the df
 missing_mask = pd.isna(df['community_area'])
 
 print(f"Found {missing_mask.sum()} observations with missing community areas to process.\n")
@@ -276,7 +272,6 @@ for index in df[missing_mask].index:
         else:
             print(f"  -> Failed. Could not determine community area.\n")
 
-#Then, we do the orginal_df
 missing_mask = pd.isna(original_df['community_area'])
 
 print(f"Found {missing_mask.sum()} observations with missing community areas to process.\n")
@@ -316,24 +311,19 @@ ACS_data_community.drop(columns = ['community_area_name_lower', 'Community Area'
 # Corrected column name from 'RecordID' to 'Record ID'
 ACS_data_community = ACS_data_community.drop(columns=['Record ID'])
 
-## Merge the two DataFrames on 'community_area_number'
+# Merge the two DataFrames on 'community_area_number'
 merged_df = pd.merge(df, ACS_data_community, left_on='community_area', right_on='community_area_number', how='inner')
 
 original_df_merged = pd.merge(original_df, ACS_data_community, left_on='community_area', right_on='community_area_number', how='inner')
 
 
-##Adding temporal features and aggregating data
+#Adding temporal features and aggregating data
 
-# Convert 'created_date' to datetime objects, coercing errors
 merged_df['created_date'] = pd.to_datetime(merged_df['created_date'], errors='coerce')
-
-
-# Assuming 'merged_df' is your DataFrame.
 
 # Convert the 'created_date' column to datetime and remove timezone info
 merged_df['created_date'] = pd.to_datetime(merged_df['created_date']).dt.tz_localize(None)
 
-# Define the start of the time window (exactly 48 hours ago)
 start_of_two_days_ago = (datetime.now() - timedelta(days=2))
 
 ##Create new dataframe that maps service requests to categories (will be helpful for dashboard)
@@ -494,11 +484,9 @@ print(grid_search.best_params_)
 # Get the best model from the grid search
 best_model = grid_search.best_estimator_
 
-# You can now use best_model for making predictions
+# The best model
 print("\nBest model obtained from GridSearchCV:")
 print(best_model)
-
-##Evaluation
 
 predictions_train_log_transformed = best_model.predict(X.select_dtypes(include=['number']))
 
@@ -520,7 +508,7 @@ mse_train_original_scale = mean_squared_error(y_train_original_scale, prediction
 rmse_train_original_scale = np.sqrt(mse_train_original_scale)
 print(f"RMSE on the original scale training data using best_model: {rmse_train_original_scale}")
 
-## Making test predictions df
+# Making test predictions df
 
 # Find the latest date in the dataset
 latest_date = community_area_counts_no_nan_lags['created_date_formatted'].max()
@@ -546,7 +534,7 @@ feature_cols = [
     'count_lag_4', 'count_lag_5', 'count_lag_6'
 ]
 
-# Calculate the mean and std for each row by setting axis=1
+# Calculate the mean and std for each row 
 test_latest_counts['count_rolling_avg_7'] = test_latest_counts[feature_cols].mean(axis=1)
 test_latest_counts['count_rolling_std_7'] = test_latest_counts[feature_cols].std(axis=1)
 
@@ -555,7 +543,7 @@ test_latest_counts.drop(columns=['count'], inplace=True)
 # Get the current date
 current_date = datetime.now().strftime('%m-%d-%Y')
 
-# Create a new DataFrame for the current community area with the current date
+#  DataFrame for the current community area with the current date
 test_data = pd.DataFrame(columns=['community_area', 'created_date_formatted', 'created_year',
        'is_holiday', 'count_lag_1',
        'count_lag_2', 'count_lag_3', 'count_lag_4', 'count_lag_5',
@@ -612,20 +600,16 @@ columns_to_clean = [
 for col in columns_to_clean:
     # Check if the column exists in the DataFrame to avoid errors
     if col in test_data_merged.columns:
-        # Step 1: Remove any characters that are not digits or a decimal point.
-        # This handles '$', ',', '+', and other symbols.
+
         test_data_merged[col] = test_data_merged[col].astype(str).str.replace(r'[^\d.]', '', regex=True)
 
-        # Step 2: Convert the cleaned column to a numeric type.
-        # 'errors='coerce'' will turn any values that still can't be converted into NaN (Not a Number).
+
         test_data_merged[col] = pd.to_numeric(test_data_merged[col], errors='coerce')
 
-        # Step 3: Fill any resulting NaN values with 0. This is a safe default for prediction.
+
         test_data_merged[col] = test_data_merged[col].fillna(0)
 
-## Running the predictions
-
-
+# Running the predictions
 # One-hot encode the categorical columns in the test data
 # This converts columns with text into numerical 0s and 1s
 X_test_encoded = pd.get_dummies(test_data_merged, dummy_na=False)
