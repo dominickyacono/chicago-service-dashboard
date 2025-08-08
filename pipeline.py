@@ -229,7 +229,7 @@ else:
 df = df[~(df['street_address'].isna() & df['community_area'].isna())]
 
 # Remove rows where 'SR_Type' is "311 INFORMATION ONLY CALL"
-df = df[df['sr_Type'] != "311 INFORMATION ONLY CALL"]
+df = df[df['sr_type'] != "311 INFORMATION ONLY CALL"]
 
 #create a copy for the original dataframe
 original_df = df.copy()
