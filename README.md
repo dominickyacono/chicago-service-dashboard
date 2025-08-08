@@ -4,7 +4,7 @@ Then, I funneled these predictions into an interactive Bokeh dashboard that prov
 
 Below is a link to the web dashboard, updated daily and available 24/7:
 
-## ❗[Click here to visit the forecasting dashboard](https://github.com/dominickyacono/chicago-service-dashboard/main/app.py)❗
+## ❗[Click here to visit the forecasting dashboard](https://chicago-service-dashboard.onrender.com/app)❗
 
 
 The following files are used to build the underlying backend and frontend of the dashboard:
