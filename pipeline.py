@@ -54,7 +54,7 @@ def get_chicago_community_area_number(address: str) -> Union[int, None]:
 
     
     headers = {
-        'User-Agent': 'Chicago Community Area Lookup Script' # Replace with your app's name
+        'User-Agent': 'Chicago Community Area Lookup Script' 
     }
 
     try:
