@@ -10,7 +10,7 @@ Below is a link to the web dashboard, updated daily and available 24/7:
 The following files are used to build the underlying backend and frontend of the dashboard:
 - **[Chicago Servcie Requests Dashboard - Overview Report](https://github.com/dominickyacono/chicago-service-dashboard/blob/main/Chicago%20Servcie%20Requests%20Dashboard%20-%20Overview%20Report.pdf)**
   This PDF report gives an overview of the predictive model and the visual dashboard, walking through the developmental steps taken.
-- **[Miscellaneous](https://github.com/dominickyacono/chicago-service-dashboard/main/miscellaneous)**
+- **[[Miscellaneous](https://github.com/dominickyacono/chicago-service-dashboard/main/miscellaneous)]**
   This folder holds supporting project elements like editor settings, cached data, and software dependencies.
 - **[Data Files](https://github.com/dominickyacono/chicago-service-dashboard/main/data_file)**
   This folder holds geographic mapping data, historical service request data, and predictions for service requests.
