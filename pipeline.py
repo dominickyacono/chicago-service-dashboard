@@ -247,7 +247,7 @@ latest_date_str = df['created_date'].max()
 df = df[df['created_date'] != latest_date_str]
 
 #save the dataframe to a csv file
-df.to_csv("chicago_data.csv", index=False)
+df.to_csv("data_files/chicago_data.csv", index=False)
 df = pd.read_csv('data_files/chicago_data.csv')
 
 # Using the community area mapping, we link addresses to missing community areas
