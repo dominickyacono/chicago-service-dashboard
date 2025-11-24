@@ -1,5 +1,2 @@
 community_area,count_lag_1,count_lag_2,count_lag_3,count_prediction
-23.0,1,2.0,2.0,1
-25.0,1,2.0,4.0,1
-29.0,1,4.0,2.0,1
-63.0,2,1.0,5.0,2
+63.0,1,1.0,1.0,1
