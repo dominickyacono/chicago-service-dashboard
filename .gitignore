@@ -1,0 +1,17 @@
+# Large data files — too big for GitHub (>100 MB)
+data_files/chicago_data.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+2026env/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Logs
+cron.log

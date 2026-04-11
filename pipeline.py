@@ -10,6 +10,10 @@ import xgboost as xgb
 from sklearn.metrics import mean_squared_error
 from datetime import datetime, timedelta
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
+import ssl
+
+# Fix SSL certificate issue on macOS
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 
@@ -176,18 +180,23 @@ service_request_map = {
 # Connecting to Chicago Request API 
 api_url = 'https://data.cityofchicago.org/resource/v6vf-nfxy.csv'
 
+# First, check what the latest date in the API is
+print("Checking latest date in API...")
+sample_df = pd.read_csv(f"{api_url}?$limit=1&$order=created_date%20DESC")
+sample_df['created_date'] = pd.to_datetime(sample_df['created_date'], errors='coerce')
+print(f"Latest date in API: {sample_df['created_date'].max()}")
+
 all_data = []
 limit = 1000
 offset = 0
-total_records_to_fetch = 100 * limit #(100 batches * 1000 records/batch)
+total_records_to_fetch = 500 * limit 
 records_fetched = 0
 
-print("Starting data download...")
+print("\nStarting data download...")
 
-# Loop to download data in batches
 while records_fetched < total_records_to_fetch:
 
-    full_api_url = f"{api_url}?$limit={limit}&$offset={offset}"
+    full_api_url = f"{api_url}?$limit={limit}&$offset={offset}&$order=created_date%20DESC"
 
     print(f"Fetching data from: {full_api_url}")
 
@@ -220,37 +229,38 @@ while records_fetched < total_records_to_fetch:
 if all_data:
     df = pd.concat(all_data, ignore_index=True)
     print(f"\nFinished downloading data. Total records downloaded: {len(df)}")
+    
+    # Remove duplicates based on 'sr_number' (unique service request ID)
+    if 'sr_number' in df.columns:
+        before_dedup = len(df)
+        df = df.drop_duplicates(subset=['sr_number'], keep='first')
+        print(f"Removed {before_dedup - len(df)} duplicate records. Records after dedup: {len(df)}")
 
 else:
     print("No data was downloaded.")
     df = pd.DataFrame()
 
-# Remove rows where 'street_address' is NaN AND 'community_area' is also NaN
 df = df[~(df['street_address'].isna() & df['community_area'].isna())]
 
-# Remove rows where 'SR_Type' is "311 INFORMATION ONLY CALL"
+
 df = df[df['sr_type'] != "311 INFORMATION ONLY CALL"]
 
-#create a copy for the original dataframe
+
 original_df = df.copy()
 
-# Convert 'created_date' to datetime if not already
 if not pd.api.types.is_datetime64_any_dtype(df['created_date']):
     # Convert 'created_date' to datetime if not already
     df['created_date'] = pd.to_datetime(df['created_date'], errors='coerce')
 
-# Convert to MM-DD-YYYY string format
+
 df['created_date'] = df['created_date'].dt.strftime('%m-%d-%Y')
 
-# Remove rows with the latest date
 latest_date_str = df['created_date'].max()
 df = df[df['created_date'] != latest_date_str]
 
-#save the dataframe to a csv file
 df.to_csv("data_files/chicago_data.csv", index=False)
 df = pd.read_csv('data_files/chicago_data.csv')
 
-# Using the community area mapping, we link addresses to missing community areas
 
 missing_mask = pd.isna(df['community_area'])
 
@@ -271,6 +281,9 @@ for index in df[missing_mask].index:
             print(f"  -> Success! Found Community Area #{community_area_num}. Updated DataFrame.\n")
         else:
             print(f"  -> Failed. Could not determine community area.\n")
+        
+        # Rate limit - Nominatim API requires 1 second between requests
+        time.sleep(1.1)
 
 missing_mask = pd.isna(original_df['community_area'])
 
@@ -291,6 +304,9 @@ for index in original_df[missing_mask].index:
             print(f"  -> Success! Found Community Area #{community_area_num}. Updated DataFrame.\n")
         else:
             print(f"  -> Failed. Could not determine community area.\n")
+        
+        # Rate limit - Nominatim API requires 1 second between requests
+        time.sleep(1.1)
 
 #remove rows with community areastill NaN
 df = df[~df['community_area'].isna()]
@@ -342,6 +358,9 @@ service_counts = filtered_df.groupby(['community_area_number', 'service_request_
 
 # Sort the counts to ensure the most frequent services come first for each area
 sorted_counts = service_counts.sort_values(['community_area_number', 'count'], ascending=[True, False])
+
+print("Top service requests by community area (preview):")
+print(sorted_counts.head())
 
 # Group by community area and aggregate the top 3 service types into a list
 top_services_list = sorted_counts.groupby('community_area_number')['service_request_category'].apply(
@@ -414,9 +433,20 @@ community_area_counts['count_rolling_std_7'] = (
 
 community_area_counts.to_csv("data_files/community_area_counts.csv", index=False)
 
+# DEBUG: Check community areas before dropping NaN lags
+print(f"\n=== DEBUG: Tracking community areas ===")
+print(f"Unique community areas BEFORE dropping NaN lags: {community_area_counts['community_area'].nunique()}")
+
 # Remove all rows where any of the 'count_lag' columns have NaN values
 lag_cols = [col for col in community_area_counts.columns if col.startswith('count_lag')]
 community_area_counts_no_nan_lags = community_area_counts.dropna(subset=lag_cols)
+
+# DEBUG: Check community areas after dropping NaN lags
+print(f"Unique community areas AFTER dropping NaN lags: {community_area_counts_no_nan_lags['community_area'].nunique()}")
+latest_date_debug = community_area_counts_no_nan_lags['created_date_formatted'].max()
+print(f"Latest date in data: {latest_date_debug}")
+print(f"Community areas on latest date: {community_area_counts_no_nan_lags[community_area_counts_no_nan_lags['created_date_formatted'] == latest_date_debug]['community_area'].nunique()}")
+print(f"=== END DEBUG ===\n")
 
 ## Preparing data for modeling
 
